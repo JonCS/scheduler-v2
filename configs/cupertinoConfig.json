@@ -1,0 +1,11 @@
+{
+    "congregation": {
+        "name": "Cupertino",
+        "location": "",
+        "weekend_meeting_day": "Sunday",
+        "weekday_meeting_day": "Wednesday"
+    },
+    "publishers": {
+        "count": "67"
+    }
+}

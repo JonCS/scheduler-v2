@@ -1,0 +1,78 @@
+{
+    "month": "Dec",
+    "days": {
+        "Dec 1": {
+            "outsideAttendant": "J. Yee",
+            "insideAttendant": "J. Su",
+            "sound": "Cam. Lung",
+            "soundTraining": "Dan. Chang",
+            "stage": "H. Tang",
+            "mic": ["A. Chen", "L. Burrell"]
+        },
+        "Dec 4": {
+            "outsideAttendant": "J. Yee",
+            "insideAttendant": "J. Su",
+            "sound": "Cam. Lung",
+            "soundTraining": "Dan. Chang",
+            "stage": "H. Tang",
+            "mic": ["L. Burrell", "A. Kim"]
+        },
+        "Dec 8": {
+            "outsideAttendant": "J. Yee",
+            "insideAttendant": "J. Su",
+            "sound": "Cam. Lung",
+            "soundTraining": "Dan. Chang",
+            "stage": "H. Tang",
+            "mic": ["A. Kim", "J. Ge"]
+        },
+        "Dec 11": {
+            "outsideAttendant": "J. Yee",
+            "insideAttendant": "J. Su",
+            "sound": "Cam. Lung",
+            "soundTraining": "Dan. Chang",
+            "stage": "H. Tang",
+            "mic": ["J. Ge", "O. Afanador"]
+        },
+        "Dec 15": {
+            "outsideAttendant": "H. Tang",
+            "insideAttendant": "T. Chang",
+            "sound": "Dan. Chang",
+            "soundTraining": "K. Chung",
+            "stage": "O. Afanador",
+            "mic": ["J. Yee", "Cam. Lung"]
+        },
+        "Dec 18": {
+            "outsideAttendant": "H. Tang",
+            "insideAttendant": "T. Chang",
+            "sound": "Dan. Chang",
+            "soundTraining": "K. Chung",
+            "stage": "O. Afanador",
+            "mic": ["Cam. Lung", "A. Brooker"]
+        },
+        "Dec 22": {
+            "outsideAttendant": "H. Tang",
+            "insideAttendant": "T. Chang",
+            "sound": "Dan. Chang",
+            "soundTraining": "K. Chung",
+            "stage": "O. Afanador",
+            "mic": ["A. Brooker", "J. Su"]
+        },
+        "Dec 25": {
+            "outsideAttendant": "H. Tang",
+            "insideAttendant": "T. Chang",
+            "sound": "Dan. Chang",
+            "soundTraining": "K. Chung",
+            "stage": "O. Afanador",
+            "mic": ["J. Su", "CK Kim"]
+        },
+        "Dec 29": {
+            "outsideAttendant": "H. Tang",
+            "insideAttendant": "T. Chang",
+            "sound": "Dan. Chang",
+            "soundTraining": "K. Chung",
+            "stage": "O. Afanador",
+            "mic": ["CK Kim", "Dab. Chang"]
+        }
+    },
+    "media": "Cam. Lung"
+}
