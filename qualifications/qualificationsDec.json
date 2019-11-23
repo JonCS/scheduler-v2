@@ -1,9 +1,0 @@
-{
-    "pool": ["A. Kim", "A. Chen", "A. Brooker", "Dab. Chang", "Cam. Lung", "Ch. Lung", "CK Kim", "Dan. Chang", "H. Paik", "H. Tang", "J. Yee", "J. Ge", "J. Su", "K. Chung", "L. Burrell", "O. Afanador", "T. Chang"],
-    "attendant": ["M. Hurd", "A. Kim", "H. Paik", "CK Kim", "A. Brooker", "K. Chung", "J. Yee", "L. Burrell", "T. Chang", "J. Su", "H. Tang"],
-    "sound": ["J. Chang", "T. Chang", "H. Tang", "A. Brooker", "J. Su", "O. Afanador", "Cam. Lung", "Dan. Chang", "A. Kim", "A. Chen", "K. Chung"],
-    "soundTraining": ["J. Ge", "Dab. Chang"],
-    "stage": ["W. Zong", "J. Chang", "A. Brooker", "A. Kim", "Dan. Chang", "Cam. Lung", "A. Chen", "J. Ge", "Dab. Chang", "K. Chung", "T. Chang", "O. Afanador", "H. Tang"],
-    "mic": ["J. Chang", "M. Hurd", "W. Zong", "H. Tang", "O. Afanador", "Dan. Chang", "K. Chung", "T. Chang", "Dab. Chang", "J. Yee", "A. Kim", "Cam. Lung", "J. Ge", "A. Brooker", "CK Kim", "L. Burrell", "J. Su", "A. Chen"],
-    "media": ["H. Tang", "J. Chang", "J. Su", "A. Kim", "O. Afanador", "W. Zong", "T. Chang", "K. Chung", "A. Brooker", "Cam. Lung"]
-}
