@@ -1,15 +1,27 @@
-// TODO Track pool. maybe by dates...? by month..?
-(function main() {
-    handleReplace(10, []);
+'use strict';
 
-    return;
-    const year = 2019;
-    const month = 11; // 0 to 11
-    // Will, M. Hurd, and JChang temporarily out of pool
-    const readFileName = "qualifications" + getMonthName(month - 1);
-    const readFilePath = "qualifications";
-    console.log("Reading from " + readFileName + ".json");
-    const qualifications = getJson(readFileName, readFilePath);
+// Style Guide: https://github.com/airbnb/javascript
+// TODO Track pool. maybe by dates...? by month..?
+
+// ==== OUT OF POOL REMINDERS ====
+// Before running:
+// Will, M. Hurd, and CK Kim temporarily out of pool
+// Took out timmy for Feb 2020
+// ===============================
+
+// TODO:
+//     - Date handler function? Keep track of when brothers are gone
+//       and don't assign them anything
+
+(function main() {
+    // handleReplace(10, []);
+    // return;
+
+    const year = 2020;
+    const month = 2; // 0 to 11
+    const prevMonth = month - 1;
+    console.log('Reading for month of ' + getMonthFromInt(prevMonth));
+    const qualifications = getQualificationsJson(prevMonth);
 
     const fullPool = qualifications.pool;
     let pool = [...fullPool];
@@ -22,21 +34,19 @@
 
     const schedule = populateSchedule(year, month, pool, attendant, sound, soundTraining, stage, mic, media);
     const json = scheduleToJson(schedule);
-    const fileName = getMonthName(month) + "SoundSchedule";
-    writeToFile(json, fileName);
+    writeScheduleToFile(json, getMonthFromInt(month));
     // const json = scheduleToJson(month, fullPool, schedule);
-    // const fileName = "testFileJson";
-    // writeToFile(json, fileName);
+    // const fileName = 'testFileJson';
+    // writeJsonToFile(json, fileName);
 
     
 
-    // console.log("Replace someone!");
-    // replacePerson(pool, mic, micSlots, "guy6");
-    // replacePerson(pool, sound, soundSlot, "guy3");
+    // console.log('Replace someone!');
+    // replacePerson(pool, mic, micSlots, 'guy6');
+    // replacePerson(pool, sound, soundSlot, 'guy3');
     // toString(attendantSlots, soundSlot, soundTrainingSlot, stageSlot, micSlots, mediaSlot);
-    const newQualifications = getQualificationsJson(pool, attendant, sound, soundTraining, stage, mic, media);
-    const poolFileName = "qualifications" + getMonthName(month);
-    writeToFile(newQualifications, poolFileName);
+    const newQualifications = qualificationsToJson(pool, attendant, sound, soundTraining, stage, mic, media);
+    writeQualificationsToFile(newQualifications, getMonthFromInt(month));
 }());
 
 function populateSchedule(year, month, pool, attendant, sound, soundTraining, stage, mic, media) {
@@ -51,7 +61,7 @@ function populateSchedule(year, month, pool, attendant, sound, soundTraining, st
     let tempPool1 = [...pool];
     
     let finalJson = {};
-    finalJson.month = getMonthName(month);
+    finalJson.month = getMonthFromInt(month);
     // Get all meeting days (Wednesdays and Sundays)
     const allMonthDaysArray = getAllDays(year, month);
     // First assign media downloader to the whole month
@@ -61,7 +71,7 @@ function populateSchedule(year, month, pool, attendant, sound, soundTraining, st
     // Split into two and assign important roles: attendant and sound
     addPersons(tempPool1, attendant, attendantSlots);
     addPersons(tempPool1, sound, soundSlot);
-    if (soundTraining.length != 0)
+    if (soundTraining.length !== 0)
         addSoundTraining(tempPool1, sound, soundTraining, soundTrainingSlot);
     else // if no one to train sound, then just pull it from sound pool
         addPersons(tempPool1, sound, soundTrainingSlot);
@@ -70,7 +80,7 @@ function populateSchedule(year, month, pool, attendant, sound, soundTraining, st
     finalJson.days = {};
     allMonthDaysArray.forEach((element, index) => {
         // When halfway mark of month is reached, do a rotation and assign new parts
-        if (index == parseInt(allMonthDaysArray.length / 2)) {
+        if (index === parseInt(allMonthDaysArray.length / 2)) {
             attendantSlots = [null, null];
             soundSlot = [null];
             soundTrainingSlot = [null];
@@ -85,9 +95,10 @@ function populateSchedule(year, month, pool, attendant, sound, soundTraining, st
         let micSlots = [null, null];
         let tempPool2 = [...tempPool1];
         addMic(tempPool2, mic, micSlots);
-        let day = getMonthName(month) + " " + element; 
+        let day = getMonthFromInt(month) + ' ' + element; 
         finalJson.days[day] = addDay(attendantSlots, soundSlot, soundTrainingSlot, stageSlot, micSlots);
     });
+    
     return finalJson;
 }
 
@@ -103,9 +114,42 @@ function addDay(attendantSlots, soundSlot, soundTrainingSlot, stageSlot, micSlot
     return result;
 }
 
-// JSON Related functions ===========================================================
+// JSON Related functions ============================================================================
 
-function getQualificationsJson(pool, attendant, sound, soundTraining, stage, mic, media) {
+function getJson(fileName, filePath) {
+    if (!fileName.includes('.json')) 
+        fileName += '.json';
+    const fs = require('fs');
+    const dict = fs.readFileSync(filePath + '/' + fileName);
+    return JSON.parse(dict);
+}
+
+
+function getCongJson(congName) {
+    const filePath = 'configs/';
+    const fileName = congName + 'Config.json';
+    
+    return getJson(fileName, filePath);
+}
+
+function getQualificationsJson(month) {
+    if (typeof month !== 'number') {
+        throw new Error('Month var must be int.');
+    }
+    const filePath = 'qualifications/';
+    const fileName = 'qualifications' + getMonthFromInt(month);
+    
+    return getJson(fileName, filePath);
+}
+
+function getScheduleJson(month) {
+    const filePath = 'schedules/';
+    const fileName = month + 'SoundSchedule.json';
+
+    return getJson(fileName, filePath);
+}
+
+function qualificationsToJson(pool, attendant, sound, soundTraining, stage, mic, media) {
     let result = {
         pool: pool,
         attendant: attendant,
@@ -118,27 +162,59 @@ function getQualificationsJson(pool, attendant, sound, soundTraining, stage, mic
     return JSON.stringify(result);
 }
 
-function getJson(fileName, filePath) {
-    if (!fileName.includes('.json')) 
-        fileName += ".json";
-    const fs = require('fs');
-    const dict = fs.readFileSync(filePath + "/" + fileName + ".json");
-    return JSON.parse(dict);
-}
-
 function scheduleToJson(schedule) {
     return JSON.stringify(schedule);
 }
 
-function writeToFile(json, fileName, filePath) {
+function writeJsonToFile(json, fileName, filePath) {
+    //console.log(JSON.stringify(json, null, 4))
     if (!fileName.includes('.json')) 
-        fileName += ".json";
+        fileName += '.json';
     const fs = require('fs');
-    fs.writeFile(filePath + '/' + fileName + ".json", json, 'utf8', function(err) {
-        if (err) 
-            return console.log(err);
-        console.log("File " + fileName + ".json saved successfully.");
+    fs.writeFile(filePath + '/' + fileName, json, 'utf8', function(err) {
+        if (err) return console.log(err);
+        console.log('File ' + fileName + ' saved successfully.');
     });
+}
+
+function writeQualificationsToFile(json, month) {
+    const filePath = 'qualifications/';
+    const fileName = 'qualifications' + month + '.json';
+    writeJsonToFile(json, fileName, filePath);
+}
+
+function writeScheduleToFile(json, month) {
+    const filePath = 'schedules/';
+    const fileName = month + 'SoundSchedule.json';
+    writeJsonToFile(json, fileName, filePath);
+}
+
+function writeCongToFile(json, congregation) {
+    const filePath = 'configs/';
+    const fileName = congregation + 'Config.json';
+    writeJsonToFile(json, fileName, filePath);
+}
+
+// Congregation related function =================================================
+
+function createCongConfig(congName, weekendMeetingDay, weekdayMeetingDay, publisherCount='') {
+    json = getCongJson('baseConfig');
+    json.congregation.name = congName;
+    json.congregation.weekendMeetingDay = weekendMeetingDay;
+    json.congregation.weekdayMeetingDay = weekdayMeetingDay;
+    json.publishers.count = publisherCount;
+
+    writeCongToFile(json, congName);
+}
+
+function updateCongConfig(congName, weekendMeetingDay, weekdayMeetingDay, publisherCount='') {
+    fileName = congName + 'Congregation';
+    json = getCongJson(fileName);
+
+    json.congregation.name = congName;
+    json.congregation.weekendMeetingDay = weekendMeetingDay;
+    json.congregation.weekdayMeetingDay = weekdayMeetingDay;
+    json.publishers.count = publisherCount;
 }
 
 //================================================================================
@@ -152,7 +228,7 @@ function addSoundTraining(pool, sound, soundTraining, soundTrainingSlot) {
     for (let i = 0; i < soundTrainingSlot.length; i++) {
         for (let j = 0; j < soundTraining.length; j++) {
             // Check used for replacePerson
-            if (soundTrainingSlot[i] != null)
+            if (soundTrainingSlot[i] !== null)
                 continue;
             soundTrainingSlot[i] = soundTraining[j];
             // Move experienced sound to start of soundTraining
@@ -186,12 +262,12 @@ function addMic(pool, micList, micSlots) {
     for (let i = 0; i < micSlots.length; i++) {
         for (let j = 0; j < micList.length; j++) {
             // Check used for replacePerson
-            if (micSlots[i] != null)
+            if (micSlots[i] = null)
                 continue;
             if (pool.includes(micList[j])) {
                 micSlots[i] = micList[j];
 
-                if (i == 0) {
+                if (i ===0) {
                     let randomIndex = micList.length - Math.floor(Math.random() * parseInt(micList.length / 3));
                     micList.splice(randomIndex, 0, micList.splice(j, 1)[0]);
                 }
@@ -216,7 +292,7 @@ function addPersons(pool, personList, slots, poolCheck = true) {
     for (let i = 0; i < slots.length; i++) {
         for (let j = 0; j < personList.length; j++) {
             // Check used for replacePerson
-            if (slots[i] != null)
+            if (slots[i] !== null)
                 continue;
             if (!poolCheck) {
                 console.log(slots[i]);
@@ -239,21 +315,20 @@ function addPersons(pool, personList, slots, poolCheck = true) {
     }
 }
 
-//============= Replace functions ====================================
+//==============Replace functions ====================================
 
 function handleReplace(month, arr) {
     // arr [(days, position, name), (...)]
-    //getMonthName(month) // use this if month it is returned as an index ...Eg. 0 to 11
-    const tNameQ = "qualificationsNov";
-    const tNameSchedule = "NovSoundSchedule";
-    position = "mic";
-    name = "J. Yee";
-    days = ["Nov 27"];
-    //days = ["Nov 17", "Nov 20", "Nov 24", "Nov 27"];
+    //getMonthFromInt(month) // use this if month it is returned as an index ...Eg. 0 to 11
+    const month = 'Nov';
+    let position = 'mic';
+    let name = 'J. Yee';
+    let days = ['Nov 27'];
+    //days = ['Nov 17', 'Nov 20', 'Nov 24', 'Nov 27'];
 
     // Get jsons
-    const qualificationsJson = getJson(tNameQ);
-    const scheduleJson = getJson(tNameSchedule);
+    const qualificationsJson = getQualificationsJson(month);
+    const scheduleJson = getScheduleJson(month);
 
     replacePerson(qualificationsJson, scheduleJson, days, position, name);
     // for (let tuple of arr) {
@@ -271,16 +346,16 @@ function replacePerson(qualificationsJson, scheduleJson, days, position, name) {
     
     // console.log(scheduleJson.days);
     console.log(qualificationsJson);
-    console.log("\n\n");
+    console.log('\n\n');
 
-    if (position == "media") {
+    if (position === 'media') {
         replaceMedia(qualificationsJson, scheduleJson, name);
     } else {
-        if (position == "mic") {
+        if (position === 'mic') {
             let pool = adjustPool(qualificationsJson, scheduleJson, days[0]);
             replaceMic(qualificationsJson, scheduleJson, days, pool, name)
         } else {
-            if (position == "soundTraining") {
+            if (position === 'soundTraining') {
 
             } else { // Attendant, stage
 
@@ -293,9 +368,9 @@ function replacePerson(qualificationsJson, scheduleJson, days, position, name) {
         // for (const day of days) {
         //     let pool = adjustPool(qualificationsJson, scheduleJson, day);
         //     // Move person back to the front of the queue
-        //     if (position == "soundTraining") {
+        //     if (position=== 'soundTraining') {
                 
-        //     } else if (position == "mic") {
+        //     } else if (position=== 'mic') {
         //         replaceMic(qualificationsJson, scheduleJson, pool, person)
         //     } else { // Attendant, sound, stage
                 
@@ -314,7 +389,7 @@ function replacePerson(qualificationsJson, scheduleJson, days, position, name) {
         // Update json of the month. Eg update november
     // console.log(scheduleJson.days);
     console.log(qualificationsJson);
-    console.log("\n\n");
+    console.log('\n\n');
 }
     
 function adjustPool (qualificationsJson, scheduleJson, day) {
@@ -377,7 +452,7 @@ function replaceMic(qualificationsJson, scheduleJson, days, pool, person) {
     // mics are back-to-back. Just replace and put them
     // at the end
     if (days.length > 1) {
-        throw "replaceMic(): days array should not be > 1 in length.";
+        throw new Error('replaceMic(): days array should not be > 1 in length.');
     }
 
     // Directly replace the Json files
@@ -438,20 +513,22 @@ function replaceSound(qualificationsJson, scheduleJson, days, pool, person) {
 }
 
 function replaceOther() {
-    // If qualified brothers arr length == 0
+    // If qualified brothers arr length=== 0
     // consider extracting from mics...
     // start from the start of the list of the
     // qualificaitons matched against the pool.
     // Then replace sound. If no results, manually do it.
 }
 
-// ======================================================================
+// Remove functions ===========================================================
 
 function removePerson() {
     // Simply remove from the duties.
     // Should only be used when removing someone
     // from sound that has not been trained.
 }
+
+// Getters for handling day logic ============================================
 
 function getAllDays(year, month) {
     const allMonthdays = daysInMonth(year, month);
@@ -478,31 +555,39 @@ function isWedOrSun(year, month, day) {
     // getDay() returns 0 to 6
     // 0 = Sunday; 3 = wednesday;
     const d = new Date(year, month, day);
-    if (d.getDay() == 0 || d.getDay() == 3)
+    if (d.getDay() === 0 || d.getDay() === 3)
         return true;
-    else
-        return false;
+    return false;
 }
 
 function isMeetingDay(year, month, day) {
-    
+    // get it from config?
+    getCongJson()
+    weekend = 0;
+    weekday = 2;
+    if (d.getDay() === 0 || d.getDay() === 3)
+        return true;
+    return false;
 }
 
+/**
+ * Gets all Wednesday and Sundays of the month.
+ * This function is specific for Cupertino Cong, because
+ * their meeting days are on Wed and Sun.
+ * Use the other method getAllMeetingDays() if not Wed and Sun. 
+ */
 function getAllWedSun(firstDay, daysInMonth, day) {
-    /**
-     * Gets all Wednesday and Sundays of the month.
-     */
     let result = [];
     let span = 0;
     let span2 = 0;
 
     // Get the span between the two days
-    if (day == 0)
+    if (day === 0)
         span = 3;
-    else if (day == 3)
+    else if (day === 3)
         span = 4;
     else
-        return console.error("Not Sun or Wed");
+        return console.error('Not Sun or Wed');
     span2 = 7 - span;
 
     let counter = firstDay;
@@ -520,21 +605,25 @@ function getAllWedSun(firstDay, daysInMonth, day) {
     return result;
 }
 
+/**
+ * Returns an array with all meeting days in it.
+ * Args:
+ *      firstDay: first day of the month
+ *      daysInMonth: Number of days in the month
+ *      day: Is the first meeting day Wed or Sun?
+ */
 function getAllMeetingDays(firstDay, daysInMonth, day) {
-    /**
-     * 
-     */
     let result = [];
     let span = 0;
     let span2 = 0;
-
-    // Get the span between the two days
-    if (day == 0)
+    // Read in a config file...?
+    // Get the span between the meeting days
+    if (day === 0) // Sun
         span = 3;
-    else if (day == 3)
+    else if (day === 3) // Wed
         span = 4;
     else
-        return console.error("Not Sun or Wed");
+        throw new Error('getAllMeetingDays() - Invalid Input: Not Wed or Sun')
     span2 = 7 - span;
 
     let counter = firstDay;
@@ -552,15 +641,17 @@ function getAllMeetingDays(firstDay, daysInMonth, day) {
     return result;
 }
 
-function getDayAsNumber(day) {
-    /**
-     * ! Not used so far !
-     * Returns the number 
-     * Args:
-     *      day: String
-     */
-    const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    const daysAbrv = ["sun", "mon", "tues", "wed", "thurs", "fri", "sat"]
+/**
+ * ! Not used so far !
+ * Returns the number corresponding to the 
+ * Args:
+ *      day: String
+ * Return:
+ *      Integer: 0 - 6
+ */
+function getDayAsInt(day) {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    const daysAbrv = ['sun', 'mon', 'tues', 'wed', 'thurs', 'fri', 'sat']
 
     const d = day.toLowerCase();
     if (days.includes(d)) 
@@ -568,26 +659,36 @@ function getDayAsNumber(day) {
     else if (daysAbrv.includes(d))
         return daysAbrv.indexOf(d)
     else
-        throw "InvalidInput: Did not input valid day." 
+        throw new Error('getDayAsInt() - InvalidInput: Did not input valid day.')
 }
 
-function getMonthName(month) {
-    /**
-     * Input:
-     *      Month: Integer 0 to 11
-     * Return:
-     *      String representation of integer
-     */
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", 
-                        "Aug", "Sept", "Oct", "Nov", "Dec"];
+/**
+ * Input:
+ *      Month: Integer 0 to 11
+ * Return:
+ *      String representation of integer
+ */
+function getMonthFromInt(month) {
+    if (month === -1) month = 11;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 
+                        'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
     return monthNames[month];
 }
 
 function toString(attendantSlots, soundSlot, soundTrainingSlot, stageSlot, micSlots, mediaSlot) {
-    console.log("Sound Schedule:");
-    console.log("Outside Attendant: " + attendantSlots[0] + " Inside Attendant: " + attendantSlots[1]);
-    console.log("Sound: " + soundSlot + " Sound Assistant: " + soundTrainingSlot);
-    console.log("Stage: " + stageSlot[0]);
-    console.log("Mics: " + micSlots[0] + " " + micSlots[1]);
-    console.log("Media Downloader: " + mediaSlot[0]);
+    console.log('Sound Schedule:');
+    console.log('Outside Attendant: ' + attendantSlots[0] + ' Inside Attendant: ' + attendantSlots[1]);
+    console.log('Sound: ' + soundSlot + ' Sound Assistant: ' + soundTrainingSlot);
+    console.log('Stage: ' + stageSlot[0]);
+    console.log('Mics: ' + micSlots[0] + ' ' + micSlots[1]);
+    console.log('Media Downloader: ' + mediaSlot[0]);
+}
+
+class Congregation {
+
+    constructor(configName) {
+        this.congName = '';
+        this.weekendMeetingDay = '';
+        this.weekdayMeetingDay = '';
+    }
 }

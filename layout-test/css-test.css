@@ -1,5 +1,8 @@
 body {
     margin: 40px;
+    align-items: center;
+    width: 90%;
+    border-color: grey;
 }
 
 .wrapper {
@@ -9,8 +12,7 @@ body {
     grid-template-rows: repeat(3, minmax(100px, auto));
     background-color: #fff;
     color: #444;
-    max-width: 1000px;
-    justify-content: center;
+    max-width: 1240px;
 }
 
 .box {
@@ -19,7 +21,7 @@ body {
     border-radius: 5px;
     padding: 20px;
     font-size: 150%;
-
+    border-color: green;
 }
 
 .box .box {
@@ -62,4 +64,8 @@ body {
 .g {
     grid-row: 2;
     grid-column: 3;
+}
+
+@media screen and (min-width: 600px) {
+
 }
